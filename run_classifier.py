@@ -204,6 +204,48 @@ class DataProcessor(object):
       return lines
 
 
+class CaseProcessor(DataProcessor):
+  """案件相似度匹配执行器"""
+
+  def get_train_examples(self, data_dir):
+    """Gets a collection of `InputExample`s for the train set."""
+    lines_A = self._read_txt(data_dir, "input_A")
+    lines_B = self._read_txt(data_dir, "input_B")
+    examples = []
+    for (i, line) in enumerate(lines):
+      if i == 0:
+        continue
+      guid = "train-%d" % (i)
+      text_a = tokenization.convert_to_unicode(line[0])
+      text_b = tokenization.convert_to_unicode(line[1])
+      label = tokenization.convert_to_unicode(line[2])
+      if label == tokenization.convert_to_unicode("contradictory"):
+        label = tokenization.convert_to_unicode("contradiction")
+      examples.append(
+          InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+    return examples
+
+  def get_dev_examples(self, data_dir):
+    """Gets a collection of `InputExample`s for the dev set."""
+    raise NotImplementedError()
+
+  def get_test_examples(self, data_dir):
+    """Gets a collection of `InputExample`s for prediction."""
+    raise NotImplementedError()
+
+  def get_labels(self):
+    """Gets the list of labels for this data set."""
+    raise NotImplementedError()
+
+  def _read_txt(self, data_dir, file_name):
+    with tf.gfile.Open(data_dir + file_name, "r") as f:
+      lines = []
+      for line in f:
+        lines.append(line)
+    
+    return lines
+
+
 class XnliProcessor(DataProcessor):
   """Processor for the XNLI data set."""
 
