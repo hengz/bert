@@ -209,20 +209,27 @@ class CaseProcessor(DataProcessor):
 
   def get_train_examples(self, data_dir):
     """Gets a collection of `InputExample`s for the train set."""
-    lines_A = self._read_txt(data_dir, "input_A")
-    lines_B = self._read_txt(data_dir, "input_B")
+    lines_A = self._read_txt(data_dir, "input_A.txt")
+    lines_B = self._read_txt(data_dir, "input_B.txt")
+    lines_C = self._read_txt(data_dir, "input_C.txt")
+    
     examples = []
-    for (i, line) in enumerate(lines):
-      if i == 0:
-        continue
+    for (i, line_A), line_B in zip(enumerate(lines_A), lines_B):
       guid = "train-%d" % (i)
-      text_a = tokenization.convert_to_unicode(line[0])
-      text_b = tokenization.convert_to_unicode(line[1])
-      label = tokenization.convert_to_unicode(line[2])
-      if label == tokenization.convert_to_unicode("contradictory"):
-        label = tokenization.convert_to_unicode("contradiction")
+      text_a = tokenization.convert_to_unicode(line_A)
+      text_b = tokenization.convert_to_unicode(line_B)
+      label = tokenization.convert_to_unicode("B")
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+    
+    for (i, line_A), line_C in zip(enumerate(lines_A), lines_C):
+      guid = "train-%d" % (i)
+      text_a = tokenization.convert_to_unicode(line_A)
+      text_c = tokenization.convert_to_unicode(line_C)
+      label = tokenization.convert_to_unicode("C")
+      examples.append(
+          InputExample(guid=guid, text_a=text_a, text_b=text_c, label=label))
+    
     return examples
 
   def get_dev_examples(self, data_dir):
@@ -231,11 +238,32 @@ class CaseProcessor(DataProcessor):
 
   def get_test_examples(self, data_dir):
     """Gets a collection of `InputExample`s for prediction."""
-    raise NotImplementedError()
+    lines_A = self._read_txt(data_dir, "test_A.txt")
+    lines_B = self._read_txt(data_dir, "test_B.txt")
+    lines_C = self._read_txt(data_dir, "test_C.txt")
+    
+    examples = []
+    for (i, line_A), line_B in zip(enumerate(lines_A), lines_B):
+      guid = "test-%d" % (i)
+      text_a = tokenization.convert_to_unicode(line_A)
+      text_b = tokenization.convert_to_unicode(line_B)
+      label = tokenization.convert_to_unicode("B")
+      examples.append(
+          InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+    
+    for (i, line_A), line_C in zip(enumerate(lines_A), lines_C):
+      guid = "test-%d" % (i)
+      text_a = tokenization.convert_to_unicode(line_A)
+      text_c = tokenization.convert_to_unicode(line_C)
+      label = tokenization.convert_to_unicode("C")
+      examples.append(
+          InputExample(guid=guid, text_a=text_a, text_b=text_c, label=label))
+    
+    return examples
 
   def get_labels(self):
     """Gets the list of labels for this data set."""
-    raise NotImplementedError()
+    return ["B", "C"]
 
   def _read_txt(self, data_dir, file_name):
     with tf.gfile.Open(data_dir + file_name, "r") as f:
@@ -830,6 +858,7 @@ def main(_):
       "mnli": MnliProcessor,
       "mrpc": MrpcProcessor,
       "xnli": XnliProcessor,
+      "case": CaseProcessor,
   }
 
   tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,
