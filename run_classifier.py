@@ -218,23 +218,19 @@ class CaseProcessor(DataProcessor):
       guid = "train-%d" % (i)
       text_a = tokenization.convert_to_unicode(line_A)
       text_b = tokenization.convert_to_unicode(line_B)
-      label = tokenization.convert_to_unicode("B")
+      label = tokenization.convert_to_unicode("1")
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
     
     for (i, line_A), line_C in zip(enumerate(lines_A), lines_C):
-      guid = "train-%d" % (i)
+      guid = "train-%d" % (i + 400)
       text_a = tokenization.convert_to_unicode(line_A)
       text_c = tokenization.convert_to_unicode(line_C)
-      label = tokenization.convert_to_unicode("C")
+      label = tokenization.convert_to_unicode("0")
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=text_c, label=label))
     
     return examples
-
-  def get_dev_examples(self, data_dir):
-    """Gets a collection of `InputExample`s for the dev set."""
-    raise NotImplementedError()
 
   def get_test_examples(self, data_dir):
     """Gets a collection of `InputExample`s for prediction."""
@@ -247,15 +243,15 @@ class CaseProcessor(DataProcessor):
       guid = "test-%d" % (i)
       text_a = tokenization.convert_to_unicode(line_A)
       text_b = tokenization.convert_to_unicode(line_B)
-      label = tokenization.convert_to_unicode("B")
+      label = tokenization.convert_to_unicode("1")
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
     
     for (i, line_A), line_C in zip(enumerate(lines_A), lines_C):
-      guid = "test-%d" % (i)
+      guid = "test-%d" % (i + 400)
       text_a = tokenization.convert_to_unicode(line_A)
       text_c = tokenization.convert_to_unicode(line_C)
-      label = tokenization.convert_to_unicode("C")
+      label = tokenization.convert_to_unicode("0")
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=text_c, label=label))
     
@@ -263,7 +259,7 @@ class CaseProcessor(DataProcessor):
 
   def get_labels(self):
     """Gets the list of labels for this data set."""
-    return ["B", "C"]
+    return ["1", "0"]
 
   def _read_txt(self, data_dir, file_name):
     with tf.gfile.Open(data_dir + file_name, "r") as f:

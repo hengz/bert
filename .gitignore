@@ -117,3 +117,5 @@ dmypy.json
 
 model/
 .vscode/
+model/
+tmp/
